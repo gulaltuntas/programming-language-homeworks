@@ -1,0 +1,127 @@
+
+
+% Our delivery places:
+
+place(adminOffice).
+place(engineeringBld).
+place(lectureHallA).
+place(instituteY).
+place(library).
+place(instituteX).
+place(socialSciencesBld).
+place(cafeteria).
+
+
+% Our delivery personnels:
+
+delivery_personnel(01, 10, 8, 011, adminOffice).
+delivery_personnel(02, 8, 12, none, lectureHallA).
+delivery_personnel(03, 20, 16, none, instituteX).
+
+
+% Our deliveries:
+
+object(011, 5, adminOffice, library, low, 01).
+object(012, 9, instituteX, engineeringBld, medium, none).
+object(013, 11, instituteX, lectureHallA, high, none).
+object(014, 7, lectureHallA, instituteY, low, none).
+object(015, 4, library, cafeteria, medium, none).
+
+
+% The amount of time from reaching a place to another:
+
+edge(adminOffice, cafeteria, 4).
+edge(cafeteria, adminOffice, 4).
+
+edge(adminOffice, library, 1).
+edge(library, adminOffice, 1).
+
+edge(adminOffice, engineeringBld, 3).
+edge(engineeringBld, adminOffice, 3).
+
+edge(engineeringBld, lectureHallA, 2).
+edge(lectureHallA, engineeringBld, 2).
+
+edge(engineeringBld, library, 5).
+edge(library, engineeringBld, 5).
+
+edge(lectureHallA, instituteY, 3).
+edge(instituteY, lectureHallA, 3).
+
+edge(instituteY, library, 3).
+edge(library, instituteY, 3).
+
+edge(cafeteria, library, 5).
+edge(library, cafeteria, 5).
+
+edge(cafeteria, socialSciencesBld, 2).
+edge(socialSciencesBld, cafeteria, 2).
+
+edge(socialSciencesBld, library, 2).
+edge(library, socialSciencesBld, 2).
+
+edge(socialSciencesBld, instituteX, 8).
+edge(instituteX, socialSciencesBld, 8).
+
+
+% Dijkstra algorithm:
+
+
+dijkstra(Start, End, Distance) :-
+    dijkstra_helper([(0, Start)], End, Distance, [Start]).
+
+dijkstra_helper([], _, _, _) :-
+    write('There is no path.'),
+    fail.
+dijkstra_helper([(Cost, Node) | _], Node, Cost, _) :- !.
+dijkstra_helper([(CurrentCost, CurrentNode) | Rest], End, Distance, Visited) :-
+    findall((NewCost, AdjacentNode),
+            (edge(CurrentNode, AdjacentNode, EdgeCost),
+             \+ member(AdjacentNode, Visited),
+             NewCost is CurrentCost + EdgeCost),
+            AdjacentNodes),
+    append(Rest, AdjacentNodes, NewQueue),
+    predsort(compare_paths, NewQueue, SortedQueue),
+    dijkstra_helper(SortedQueue, End, Distance, [CurrentNode | Visited]).
+
+compare_paths(Order, (Cost1, _), (Cost2, _)) :-
+    (Cost1 =< Cost2, Order = '<') ;
+    (Cost1 > Cost2, Order = '>').
+
+
+
+check_delivery_status(ObjectID) :-
+    object(ObjectID, Weight, PickupPlace, DropoffPlace, _, _), % Object details
+    % If the object is already in delivery, return the person delivering it
+    (delivery_in_transit(ObjectID, DeliveryPersonID) ->
+        write('Package is already in transit. Being delivered by Delivery Person '), write(DeliveryPersonID), nl
+    ;
+    % Check if a delivery person is available to pick and deliver a given object
+
+        delivery_person_available(ObjectID, PickupPlace, DropoffPlace, Weight)
+    ).
+
+% Check if a delivery person is available within their work hours and capacity
+delivery_person_available(ObjectID, PickupPlace, DropoffPlace, Weight) :-
+    delivery_personnel(DeliveryPersonID, Capacity, WorkHours, none, CurrentLocation), % Check if not currently delivering
+    dijkstra(CurrentLocation, PickupPlace, Time1),
+    dijkstra(PickupPlace, DropoffPlace, Time2),
+    TotalTime is Time1 + Time2,
+    Time1 + Time2 =< WorkHours,
+    Capacity >= Weight,
+    write('The object we are carrying is: '), write(ObjectID), nl,
+    write('Delivery person '), write(DeliveryPersonID), write(' is available.'),
+    nl, write('Total time required for delivery: '), write(TotalTime), write(' hours.'), nl.
+
+% Check if a delivery person is currently delivering a package
+currently_delivering(DeliveryPersonID, JobID) :-
+    delivery_personnel(DeliveryPersonID, _, _, JobID, _),
+    JobID \= none.
+
+% Check if a delivery person is currently delivering the object
+delivery_in_transit(ObjectID, DeliveryPersonID) :-
+    object(ObjectID, _, _, _, _, DeliveryPersonID),
+    delivery_personnel(DeliveryPersonID, _, _, _, _).
+
+
+

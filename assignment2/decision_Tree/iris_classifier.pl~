@@ -1,0 +1,121 @@
+load_model(decision_tree_model):- consult(decision_tree_model).
+
+classify(SepalLength, SepalWidth, PetalLength, PetalWidth) :-
+(
+    PetalWidth =< 0.8,
+    write('Iris-setosa')
+    ;
+    PetalLength =< 4.75,
+    PetalWidth =< 1.65,
+    PetalWidth >= 0.8,
+    write('Iris-versicolor')
+    ;
+    PetalLength =< 4.75,
+    PetalWidth >= 1.65,
+    PetalWidth >= 0.8,
+    write('Iris-virginica')
+    ;
+    PetalLength >= 4.75,
+    PetalWidth >= 0.8,
+    PetalWidth =< 1.75,
+    PetalLength =< 4.95,
+    write('Iris-versicolor')
+    ;
+    PetalLength >= 4.75,
+    PetalWidth >= 0.8,
+    PetalWidth =< 1.55,
+    PetalLength =< 4.95,
+    write('Iris-virginica')
+    ;
+    PetalLength >= 4.95,
+    PetalWidth =< 1.75,
+    PetalWidth >= 1.55,
+    SepalLength =< 6.95,
+    write('Iris-versicolor')
+    ;
+    PetalLength >= 4.95,
+    PetalWidth =< 1.75,
+    PetalWidth >= 1.55,
+    SepalLength >= 6.95,
+    write('Iris-virginica')
+    ;
+    PetalLength >= 2.45,
+    PetalLength =< 4.85,+
+    PetalWidth >= 1.75,
+    SepalWidth =< 3.1,
+    write('Iris-virginica')
+    ;
+    PetalLength >= 4.75,
+    PetalWidth >= 1.75,
+    PetalLength =< 4.85,
+    SepalWidth >= 3.1,
+    write('Iris-versicolor')
+    ;
+    PetalWidth >= 1.75,
+    PetalLength >= 4.85,
+    write('Iris-virginica')
+).
+
+
+
+
+
+/*
+% Decision tree classification
+classify(SepalLength, SepalWidth, PetalLength, PetalWidth) :-
+    (
+        (SepalLength =< 5.8, SepalLength >= 4.3),
+        (SepalWidth =< 4.4, SepalWidth >= 2.3),
+        (PetalLength =< 2.8, PetalLength >= 1.1),
+        (PetalWidth =< 0.6, PetalWidth >= 0.1),
+        ClassLabel = 'Iris-setosa'
+    ;
+        (SepalLength =< 7.0, SepalLength >= 4.9),
+        (SepalWidth =< 3.4, SepalWidth >= 2.2),
+        (PetalLength > 2.8, PetalLength =< 4.9),
+        (PetalWidth =< 1.8, PetalWidth >= 1.0),
+        ClassLabel = 'Iris-versicolor'
+    ;
+        (SepalLength =< 7.9, SepalLength >= 5.7),
+        (SepalWidth =< 3.8, SepalWidth >= 2.2),
+        (PetalLength =< 6.9, PetalLength >= 4.5),
+        (PetalWidth =< 2.5, PetalWidth >= 1.4),
+        ClassLabel = 'Iris-virginica'
+    ),
+    write('Classification result: '), write(ClassLabel), nl.
+
+
+*/
+
+
+
+/*
+% Decision tree rules
+classify(SepalLength, SepalWidth, PetalLength, PetalWidth) :-
+    SepalLength =< 5.8, SepalLength >= 4.3,
+    SepalWidth =< 4.4, SepalWidth >= 2.3,
+    PetalLength =< 2.8, PetalLength >= 1.1,
+    PetalWidth =< 0.6, PetalWidth >= 0.1,
+    ClassLabel = 'Iris-setosa',
+    write('Classification result: '), write(ClassLabel), nl.
+
+classify(SepalLength, SepalWidth, PetalLength, PetalWidth) :-
+
+    SepalLength =< 7.0 , SepalLength >= 4.9,
+    SepalWidth =< 3.4, SepalWidth >= 2.2,
+    PetalLength > 2.8, PetalLength =< 4.9, % Placeholder condition
+    PetalWidth =< 1.8, PetalWidth >= 1.0,
+    ClassLabel = 'Iris-versicolor',
+
+    write('Classification result: '), write(ClassLabel), nl.
+
+classify(SepalLength, SepalWidth, PetalLength, PetalWidth) :-
+
+    SepalLength =< 7.9 , SepalLength >=  5.7,
+    SepalWidth =< 3.8, SepalWidth >= 2.2,
+    PetalLength =< 6.9, PetalLength >= 4.5, % Placeholder condition
+    PetalWidth =< 2.5, PetalWidth >= 1.4,
+    ClassLabel = 'Iris-virginica',
+    write('Classification result: '), write(ClassLabel), nl.
+
+*/
